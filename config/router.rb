@@ -27,25 +27,25 @@ class Router
 
   def get(url_str, resource, action)
     if get? && route_match?(url_str)
-      resource.new(@request).send(action)
+      send_to_controller(resource, action)
     end
   end
 
   def post(url_str, resource, action)
     if post? && route_match?(url_str)
-      resource.new(@request).send(action)
+      send_to_controller(resource, action)
     end
   end
 
   def put(url_str, resource, action)
     if put? && route_match?(url_str)
-      resource.new(@request).send(action)
+      send_to_controller(resource, action)
     end
   end
 
   def delete(url_str, resource, action)
     if delete? && route_match?(url_str)
-      resource.new(@request).send(action)
+      send_to_controller(resource, action)
     end
   end
 
@@ -63,6 +63,14 @@ class Router
 
   def delete?
     @request[:method] == "DELETE"
+  end
+
+  def send_to_controller(resource, action)
+    @request[:params].merge!({
+      controller_name: resource.to_s,
+      action_name: action
+    })
+    resource.new(@request).send(action)
   end
 
   def route_match?(url)

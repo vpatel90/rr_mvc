@@ -32,7 +32,7 @@ loop do
 
   request_count += 1
 
-  if request.split(/ /).first == "GET"
+  if ["GET", "DELETE"].include?(request.split(/ /).first)
     while "\r\n" != (line = socket.gets) do
       request += line
     end
@@ -67,7 +67,24 @@ loop do
     puts "*" * 20
     puts "RESPONSE WAS NIL!"
     puts "*" * 20
-    socket.print "HTTP/1.1 500 SERVER ERROR\r\n"
+    response = """
+    <h1>500 Error</h1>
+    <hr/>
+    <h3>This means there was an error in your server code caused by one or more of the following:</h3>
+    <iframe src='//giphy.com/embed/6uMqzcbWRhoT6' width='480' height='360' frameBorder='0' class='giphy-embed' allowFullScreen></iframe><p><a href='http://giphy.com/gifs/cat-animal-kitten-6uMqzcbWRhoT6'>via GIPHY</a></p>
+    <ul>
+      <li>You are missing routes for #{@request[:route].inspect}</li>
+      <li>Your existing routes are not properly formed</li>
+      <li>Your controller action is empty</li>
+      <li>Your controller action is not calling render</li>
+    </ul>
+    """
+    socket.print "HTTP/1.1 500 SERVER ERROR\r\n" +
+                 "Content-Type: text/html\r\n" +
+                 "Content-Length: #{response.bytesize}\r\n" +
+                 "Connection: close\r\n"
+    socket.print "\r\n"
+    socket.print response
     socket.close
     next
   end
