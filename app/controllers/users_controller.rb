@@ -3,7 +3,7 @@ class UsersController < ApplicationController
     if params[:first_name].nil? && params[:limit].nil?
       array = []
       User.all.each do |user|
-        array << "first name: #{user.first_name} last name: #{user.last_name} id: #{user.id} age: #{user.age}"
+        array << {first_name:user.first_name, last_name:user.last_name, id:user.id, age:user.age}
       end
       render array.to_json
     else
@@ -17,7 +17,7 @@ class UsersController < ApplicationController
       user.id == params[:id].to_i
     end
     user = request[0]
-    render "first name: #{user.first_name} last name: #{user.last_name} id: #{user.id} age: #{user.age}".to_json
+    render({first_name:user.first_name, last_name:user.last_name, id:user.id, age:user.age}.to_json)
   end
 
   def analyze_optional_params
@@ -34,7 +34,7 @@ class UsersController < ApplicationController
     requested_names = first_names.select {|names| names.match(/#{params[:first_name].capitalize}/)}
     User.all.each do |user|
       if requested_names.any? {|name| name == user.first_name}
-        user_names << "First Name: #{user.first_name} Last Name: #{user.last_name} ID: #{user.id} Age: #{user.age}"
+        user_names <<  {first_name:user.first_name, last_name:user.last_name, id:user.id, age:user.age}
       end
     end
     render user_names.to_json
@@ -49,7 +49,7 @@ class UsersController < ApplicationController
       user_names = []
       (start_index...total_length).each do |index|
         user = User.all[index]
-        user_names << "First Name: #{user.first_name} Last Name: #{user.last_name} ID: #{user.id} Age: #{user.age}"
+        user_names <<  {first_name:user.first_name, last_name:user.last_name, id:user.id, age:user.age}
       end
       render user_names.to_json
     end
@@ -60,13 +60,37 @@ class UsersController < ApplicationController
       return render "400 bad request", status: "400, BAD REQUEST"
     end
     user = User.new(params["first_name"], params["last_name"], User.all.size + 1, params["age"])
-    render "first name: #{user.first_name} last name: #{user.last_name} id: #{user.id} age: #{user.age}".to_json
+    render({Added: "Success", first_name:user.first_name,
+            last_name:user.last_name, id:user.id, age:user.age}.to_json)
   end
 
   def update
-    return "404 not found" if params[:id].nil?
-    binding.pry
+    return "404 not found" if params[:id].nil? || params[:id].to_i > User.all.length
+    request = User.all.select do |user|
+      user.id == params[:id].to_i
+    end
+    user = request[0]
+    if params["age"]
+      user.age = params["age"]
+    end
+    if params["first_name"]
+      user.first_name = params["first_name"]
+    end
+    if params["last_name"]
+      user.last_name = params["last_name"]
+    end
+    render({Updated: "Success", first_name:user.first_name,
+            last_name:user.last_name, id:user.id, age:user.age}.to_json)
+  end
 
+  def delete
+    return "404 not found" if params[:id].nil? || params[:id].to_i > User.all.length
+    request = User.all.select do |user|
+      user.id == params[:id].to_i
+    end
+    user = request[0]
+    User.all.delete(user)
+    render({deleted: "Success"}.to_json)
   end
 
 
