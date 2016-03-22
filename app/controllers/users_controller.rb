@@ -55,5 +55,9 @@ class UsersController < ApplicationController
     end
   end
 
+  def add
+    binding.pry
+  end
+
 
 end
