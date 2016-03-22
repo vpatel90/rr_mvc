@@ -5,6 +5,9 @@ require_relative '../config/router'
 require_relative '../lib/all'
 
 system('clear')
+UsersData::USERS.each_with_index do |user, index|
+  User.new(user[:first_name], user[:last_name], index + 1, user[:age])
+end
 
 # Initialize a TCPServer object that will listen
 # on localhost:3001 for incoming connections.
