@@ -56,7 +56,17 @@ class UsersController < ApplicationController
   end
 
   def add
+    if params["first_name"].nil? || params["last_name"].nil? || params["age"].nil?
+      return render "400 bad request", status: "400, BAD REQUEST"
+    end
+    user = User.new(params["first_name"], params["last_name"], User.all.size + 1, params["age"])
+    render "first name: #{user.first_name} last name: #{user.last_name} id: #{user.id} age: #{user.age}".to_json
+  end
+
+  def update
+    return "404 not found" if params[:id].nil?
     binding.pry
+
   end
 
 
