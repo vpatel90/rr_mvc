@@ -11,7 +11,7 @@ class UsersController < ApplicationController
     end
   end
 
-  def single
+  def show
     return render "404 NOT FOUND".to_json, status: "404, NOT FOUND" if params[:id].to_i > User.all.length
     request = User.all.select do |user|
       user.id == params[:id].to_i
@@ -55,7 +55,7 @@ class UsersController < ApplicationController
     end
   end
 
-  def add
+  def create
     if params["first_name"].nil? || params["last_name"].nil? || params["age"].nil?
       return render "400 bad request", status: "400, BAD REQUEST"
     end
@@ -83,7 +83,7 @@ class UsersController < ApplicationController
             last_name:user.last_name, id:user.id, age:user.age}.to_json)
   end
 
-  def delete
+  def destroy
     return "404 not found" if params[:id].nil? || params[:id].to_i > User.all.length
     request = User.all.select do |user|
       user.id == params[:id].to_i
