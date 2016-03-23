@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/vpatel90/rr_mvc/badges/gpa.svg)](https://codeclimate.com/github/vpatel90/rr_mvc)
+
 # Request / Response MVC!
 
 
